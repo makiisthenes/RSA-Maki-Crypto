@@ -50,9 +50,28 @@ def generate_encrypt_expon(phi_n):
     return public_exponent
 
 
+def gcdExtended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcdExtended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+
+def check(a, b):
+    if gcd(a,b)==1:
+        return gcdExtended(a, b)[2]
+
+
 def calculate_decrypt_expon(encrypt_expon, phi_n):
     # Need to use Exteneded Euclidian Algo to determine inverse value.
-    return 0
+    value = check(phi_n, encrypt_expon)
+    if value != encrypt_expon:
+        return value
+    else:
+        print("Cannot calculate gcd")
+        exit(0)
 
 
 def key_generation() -> list:
@@ -74,6 +93,7 @@ def key_generation() -> list:
     encrypt_exp = generate_encrypt_expon(phi_n)
     print(f"Generated Public Exponent: {encrypt_exp}")
     decrypt_exp = calculate_decrypt_expon(encrypt_exp, phi_n)
+    print(f"Generated Private Exponent: {decrypt_exp}")
     public_key = (n, encrypt_exp)
     private_key = (n, decrypt_exp)
     return [public_key, private_key]
@@ -104,4 +124,4 @@ def decrypt(ciphertext, private_key) -> bytes:
     return b''
 
 
-key_generation()
+# Current issue with GCD and Ext GCD, need to code each GCD function again.
